@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+<title>Fortnite C6S3 Mobile AI Coach + Guide</title>
+<style>
+  /* Reset */
+  * {
+    box-sizing: border-box;
+  }
+  body, html {
+    margin: 0; padding: 0;
+    height: 100%;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+      Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+    background: #000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  /* Phone frame */
+  #phone {
+    position: relative;
+    width: 400px;
+    height: 800px;
+    background: linear-gradient(145deg, #0ff, #00a);
+    border-radius: 40px;
+    box-shadow:
+      0 0 30px #0ff,
+      inset 0 0 20px #0ff;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  /* Screen */
+  #screen {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 30px;
+    margin: 20px;
+    color: white;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  /* Top bar with timer */
+  #topbar {
+    height: 50px;
+    border-bottom: 1px solid rgba(255,255,255,0.3);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    background: rgba(0,255,255,0.15);
+    user-select: none;
+  }
+  /* App grid */
+  #appGrid {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    padding: 20px;
+    overflow-y: auto;
+  }
+  /* App icon */
+  .appIcon {
+    background: rgba(0,255,255,0.3);
+    border-radius: 20px;
+    box-shadow: 0 0 10px #0ff;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 15px;
+    user-select: none;
+    transition: background 0.3s;
+  }
+  .appIcon:hover {
+    background: rgba(0,255,255,0.6);
+  }
+  .appIcon img {
+    width: 64px;
+    height: 64px;
+    margin-bottom: 8px;
+  }
+  .appIcon span {
+    font-weight: 600;
+    font-size: 14px;
+    text-align: center;
+  }
+  /* Section panels */
+  .sectionPanel {
+    position: absolute;
+    top: 70px;
+    left: 20px;
+    right: 20px;
+    bottom: 20px;
+    background: rgba(0,0,0,0.7);
+    border-radius: 20px;
+    padding: 20px;
+    color: white;
+    overflow-y: auto;
+    display: none;
+    flex-direction: column;
+  }
+  .sectionPanel.active {
+    display: flex;
+  }
+  .sectionPanel h2 {
+    color: #0ff;
+    margin-top: 0;
+  }
+  .closeBtn {
+    align-self: flex-end;
+    background: #0ff;
+    border: none;
+    border-radius: 15px;
+    padding: 6px 14px;
+    color: #000;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    margin-bottom: 10px;
+    user-select: none;
+    width: fit-content;
+  }
+  .closeBtn:hover {
+    background: #0cc;
+  }
+  ul, ol {
+    padding-left: 20px;
+  }
+  li {
+    margin-bottom: 8px;
+  }
+  textarea {
+    width: 100%;
+    height: 80px;
+    border-radius: 15px;
+    border: none;
+    padding: 12px;
+    font-size: 16px;
+    resize: none;
+    margin-top: 10px;
+    background: rgba(255,255,255,0.1);
+    color: white;
+  }
+  button.askBtn {
+    background: #0ff;
+    border: none;
+    border-radius: 15px;
+    padding: 12px 20px;
+    color: #000;
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 10px;
+    width: 100%;
+    max-width: 300px;
+  }
+  button.askBtn:hover {
+    background: #0cc;
+  }
+  pre#responseArea {
+    white-space: pre-wrap;
+    background: rgba(0, 0, 0, 0.4);
+    padding: 15px;
+    border-radius: 15px;
+    margin-top: 15px;
+    min-height: 100px;
+  }
+  label {
+    user-select: none;
+    cursor: pointer;
+  }
+  input[type=checkbox] {
+    margin-right: 10px;
+    transform: scale(1.2);
+    cursor: pointer;
+  }
+  iframe {
+    border-radius: 15px;
+    border: none;
+    width: 100%;
+    height: 100%;
+  }
+  /* Scrollbar for panels */
+  .sectionPanel::-webkit-scrollbar {
+    width: 8px;
+  }
+  .sectionPanel::-webkit-scrollbar-thumb {
+    background: #0ff;
+    border-radius: 10px;
+  }
+  /* Responsive */
+  @media (max-width: 420px) {
+    #phone {
+      width: 360px;
+      height: 720px;
+    }
+    #topbar {
+      font-size: 18px;
+      height: 40px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div id="phone" role="main" aria-label="Fortnite Mobile Guide Phone">
+
+  <div id="screen">
+    <div id="topbar">00:00:00</div>
+
+    <div id="appGrid" aria-label="App grid">
+      <div class="appIcon" data-section="tips" tabindex="0" role="button" aria-pressed="false" aria-label="Open Tips and Mistakes">
+        <img src="https://img.icons8.com/ios-filled/100/00ffff/checklist.png" alt="Tips Icon"/>
+        <span>Tips & Mistakes</span>
+      </div>
+      <div class="appIcon" data-section="drops" tabindex="0" role="button" aria-pressed="false" aria-label="Open Best Drops">
+        <img src="https://img.icons8.com/ios-filled/100/00ffff/location.png" alt="Drops Icon"/>
+        <span>Best Drops</span>
+      </div>
+      <div class="appIcon" data-section="rotation" tabindex="0" role="button" aria-pressed="false" aria-label="Open Rotation Strategy">
+        <img src="https://img.icons8.com/ios-filled/100/00ffff/compass.png" alt="Rotation Icon"/>
+        <span>Rotation</span>
+      </div>
+      <div class="appIcon" data-section="tournament" tabindex="0" role="button" aria-pressed="false" aria-label="Open Tournament Plan">
+        <img src="https://img.icons8.com/ios-filled/100/00ffff/trophy.png" alt="Tournament Icon"/>
+        <span>Tournament Plan</span>
+      </div>
+      <div class="appIcon" data-section="checklist" tabindex="0" role="button" aria-pressed="false" aria-label="Open Daily Checklist">
+        <img src="https://img.icons8.com/ios-filled/100/00ffff/task.png" alt="Checklist Icon"/>
+        <span>Checklist</span>
+      </div>
+      <div class="appIcon" data-section="aiCoach" tabindex="0" role="button" aria-pressed="false" aria-label="Open AI Coach">
+        <img src="https://img.icons8.com/ios-filled/100/00ffff/robot-2.png" alt="AI Coach Icon"/>
+        <span>AI Coach</span>
+      </div>
+      <div class="appIcon" data-section="fortniteGG" tabindex="0" role="button" aria-pressed="false" aria-label="Open Fortnite.gg">
+        <img src="https://img.icons8.com/ios-filled/100/00ffff/worldwide-location.png" alt="Fortnite.gg Icon"/>
+        <span>Fortnite.gg</span>
+      </div>
+      <div class="appIcon" data-section="fortniteComp" tabindex="0" role="button" aria-pressed="false" aria-label="Open Fortnite Competitive">
+        <img src="https://img.icons8.com/ios-filled/100/00ffff/game-controller.png" alt="Fortnite Competitive Icon"/>
+        <span>Competitive</span>
+      </div>
+    </div>
+
+    <div id="tips" class="sectionPanel" tabindex="0" aria-label="Tips and Mistakes">
+      <button class="closeBtn" aria-label="Close Tips and Mistakes">Close</button>
+      <h2>Top Competitive Tips & Mistakes to Avoid</h2>
+      <ul>
+        <li>Don’t hot-drop busy POIs like Supernova Academy without a plan</li>
+        <li>Always plan your rotation to avoid getting caught in storm</li>
+        <li>Use Boons & Hero Ranks to your advantage</li>
+        <li>Keep your crosshair at head level for faster kills</li>
+        <li>After kills, create space to avoid 3rd parties</li>
+        <li>Maintain material count, don’t waste them early</li>
+        <li>Don’t overextend without vision or height control</li>
+        <li>Master piece control and right-hand peek edits</li>
+        <li>Use mobility items smartly, don’t waste them</li>
+        <li>Balance eliminations with placement points</li>
+      </ul>
+    </div>
+
+    <div id="drops" class="sectionPanel" tabindex="0" aria-label="Best Drop Spots">
+      <button class="closeBtn" aria-label="Close Best Drops">Close</button>
+      <h2>Best Drop Spots (Chapter 6 Season 3)</h2>
+      <ul>
+        <li><strong>Fortress of Solitude:</strong> Safe, great loot, slurp barrels & vehicles</li>
+        <li><strong>Craggy Cliffs:</strong> Elevation advantage, fishing spots, safe rotations</li>
+        <li><strong>Salty Docks:</strong> Boats for rotation, many chests, less contest</li>
+        <li><strong>Dirty Docks:</strong> High chest spawn rate, container loot, NPC upgrades</li>
+        <li><strong>Mountain Tunnel:</strong> Low contest, great vehicle spawns</li>
+        <li><strong>Ranger's Ruin:</strong> Hero shrine, mythic chance, good materials</li>
+        <li><strong>Supernova Academy:</strong> Mythics & vaults but very high risk</li>
+      </ul>
+    </div>
+
+    <div id="rotation" class="sectionPanel" tabindex="0" aria-label="Rotation Strategy">
+      <button class="closeBtn" aria-label="Close Rotation Strategy">Close</button>
+      <h2>Rotation Strategy</h2>
+      <ul>
+        <li>Land on edge POIs to minimize early fights</li>
+        <li>Loot quickly (3-4 min max) and secure shields</li>
+        <li>Rotate early towards shrines or spires for Boons</li>
+        <li>Use vehicles, launch pads, and natural cover</li>
+        <li>Save mobility items for late game escapes or fights</li>
+        <li>Predict storm movement & rotate to high ground</li>
+      </ul>
+    </div>
+
+    <div id="tournament" class="sectionPanel" tabindex="0" aria-label="Tournament Plan">
+      <button class="closeBtn" aria-label="Close Tournament Plan">Close</button>
+      <h2>Tournament Step-by-Step Plan</h2>
+      <ol>
+        <li><strong>Before game:</strong> Warm-up aim & movement (15-20 min)</li>
+        <li><strong>Landing:</strong> Choose safe or contested POIs based on lobby</li>
+        <li><strong>Early game:</strong> Focus on looting & avoiding fights</li>
+        <li><strong>Mid game:</strong> Prioritize rotations & upgrade Boons</li>
+        <li><strong>Late game:</strong> Control high ground & conserve mats</li>
+        <li><strong>End game:</strong> Use smart aggression & third-party fights</li>
+        <li><strong>After match:</strong> Review replays and mistakes</li>
+      </ol>
+    </div>
+
+    <div id="checklist" class="sectionPanel" tabindex="0" aria-label="Daily Checklist">
+      <button class="closeBtn" aria-label="Close Daily Checklist">Close</button>
+      <h2>Daily Training Checklist</h2>
+      <label><input type="checkbox" id="aim" /> 20 minutes aim training (flick + tracking)</label><br />
+      <label><input type="checkbox" id="dropsChecklist" /> 5 drops in main POIs</label><br />
+      <label><input type="checkbox" id="rotations" /> Review 3 rotations in replay</label><br />
+      <label><input type="checkbox" id="storm" /> Storm surge tag practice</label><br />
+      <label><input type="checkbox" id="endgame" /> Endgame zone wars practice</label>
+    </div>
+
+    <div id="aiCoach" class="sectionPanel" tabindex="0" aria-label="AI Coach">
+      <button class="closeBtn" aria-label="Close AI Coach">Close</button>
+      <h2>Ask the AI Coach</h2>
+      <textarea id="userPrompt" placeholder="Ask your Fortnite question here..."></textarea>
+      <button class="askBtn" onclick="askGPT()">Ask Coach</button>
+      <pre id="responseArea">Your answer will appear here.</pre>
+    </div>
+
+    <div id="fortniteGG" class="sectionPanel" tabindex="0" aria-label="Fortnite.gg">
+      <button class="closeBtn" aria-label="Close Fortnite.gg">Close</button>
+      <h2>Fortnite.gg Embedded</h2>
+      <iframe src="https://fortnite.gg/" title="Fortnite.gg" sandbox="allow-same-origin allow-scripts allow-popups allow-forms" ></iframe>
+    </div>
+
+    <div id="fortniteComp" class="sectionPanel" tabindex="0" aria-label="Fortnite Competitive">
+      <button class="closeBtn" aria-label="Close Fortnite Competitive">Close</button>
+      <h2>Fortnite Official Competitive Page</h2>
+      <iframe src="https://www.fortnite.com/competitive/?lang=en-US" title="Fortnite Competitive" sandbox="allow-same-origin allow-scripts allow-popups allow-forms"></iframe>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  // Timer
+  function startTimer() {
+    const topbar = document.getElementById('topbar');
+    let seconds = 0;
+    setInterval(() => {
+      seconds++;
+      let hrs = Math.floor(seconds / 3600);
+      let mins = Math.floor((seconds % 3600) / 60);
+      let secs = seconds % 60;
+      topbar.textContent = 
+        (hrs < 10 ? '0'+hrs : hrs) + ':' + 
+        (mins < 10 ? '0'+mins : mins) + ':' + 
+        (secs < 10 ? '0'+secs : secs);
+    }, 1000);
+  }
+  startTimer();
+
+  // App panel logic
+  const appGrid = document.getElementById('appGrid');
+  const sections = document.querySelectorAll('.sectionPanel');
+  appGrid.addEventListener('click', (e) => {
+    let target = e.target;
+    while(target && !target.classList.contains('appIcon')) {
+      target = target.parentElement;
+    }
+    if(target) {
+      const section = target.getAttribute('data-section');
+      openSection(section);
+    }
+  });
+  appGrid.addEventListener('keydown', (e) => {
+    if(e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      const section = e.target.getAttribute('data-section');
+      if(section) openSection(section);
+    }
+  });
+
+  function openSection(id) {
+    sections.forEach(sec => sec.classList.remove('active'));
+    const section = document.getElementById(id);
+    if (section) section.classList.add('active');
+    appGrid.style.display = 'none';
+  }
+
+  document.querySelectorAll('.closeBtn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      sections.forEach(sec => sec.classList.remove('active'));
+      appGrid.style.display = 'grid';
+    });
+  });
+
+  // ChatGPT ask function
+  async function askGPT() {
+    const prompt = document.getElementById('userPrompt').value.trim();
+    const responseArea = document.getElementById('responseArea');
+    if (!prompt) {
+      responseArea.textContent = "Please enter a question.";
+      return;
+    }
+    responseArea.textContent = "Thinking...";
+
+    try {
+      const res = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer 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'  // Replace with your API key
+        },
+        body: JSON.stringify({
+          model: 'gpt-4o-mini',
+          messages: [
+            {
+              role: 'system',
+              content: 'You are a Fortnite Chapter 6 Season 3 competitive coach. Provide short, actionable advice with 2 options per question.'
+            },
+            { role: 'user', content: prompt }
+          ],
+          max_tokens: 150,
+          temperature: 0.7
+        })
+      });
+      const data = await res.json();
+      if (data.error) {
+        responseArea.textContent = "Error: " + data.error.message;
+      } else {
+        const answer = data.choices[0].message.content.trim();
+        responseArea.textContent = answer;
+      }
+    } catch (err) {
+      responseArea.textContent = "Request failed: " + err.message;
+    }
+  }
+</script>
+
+</body>
+</html>
